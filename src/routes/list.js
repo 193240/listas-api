@@ -27,6 +27,14 @@ router.post('/new', (request, response) => {
         response.status(201).send(`List added with ID: ${result.insertId}`);
     });
 });
+//retorna la lista activa
+router.get('/list-active/:id', (request, response) => {
+    const id = request.params.id;
+    connection.query('Select idlist_Products from list_Products WHERE user_id = ? and activo=1', id, (error, result) => {
+        if (error) throw error;
+        response.send(result);
+    });
+});
 
 
 // actualiza todas las listas a inactivas
@@ -34,8 +42,11 @@ router.put('/inactivo/:id', (request, response) => {
     const id = request.params.id;
     connection.query('UPDATE list_Products SET activo=0 WHERE user_id = ?', id, (error, result) => {
         if (error) throw error;
- 
-        response.send('User updated successfully: '+result.affectedRows);
+        if(result.affectedRows>0){
+            response.status(200).send();
+        }else{
+            response.status(203).send();
+        }
     });
 });
 // actualiza todas las listas a inactivas
